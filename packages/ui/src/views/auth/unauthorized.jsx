@@ -46,7 +46,7 @@ const UnauthorizedPage = () => {
                                 <StyledButton sx={{ px: 2, py: 1 }}>Back to Home</StyledButton>
                             </Link>
                         ) : (
-                            <Link to='/login'>
+                            <Link to='/login2'>
                                 <StyledButton sx={{ px: 2, py: 1 }}>Back to Login</StyledButton>
                             </Link>
                         )}

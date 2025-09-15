@@ -107,7 +107,16 @@ export class AccountService {
 
     private async ensureOneOrganizationOnly(queryRunner: QueryRunner) {
         const organizations = await this.organizationservice.readOrganization(queryRunner)
-        if (organizations.length > 0) throw new InternalFlowiseError(StatusCodes.BAD_REQUEST, 'You can only have one organization')
+        
+        // Vérifier la variable d'environnement pour permettre plusieurs organisations
+        const allowMultipleOrgs = process.env.ALLOW_MULTIPLE_ORGANIZATIONS === 'true'
+        
+        if (!allowMultipleOrgs && organizations.length > 0) {
+            throw new InternalFlowiseError(StatusCodes.BAD_REQUEST, 'You can only have one organization')
+        }
+        
+        // Log pour debug
+        console.log(`Found ${organizations.length} existing organizations. Allow multiple: ${allowMultipleOrgs}`)
     }
 
     private async createRegisterAccount(data: AccountDTO, queryRunner: QueryRunner) {
@@ -117,13 +126,27 @@ export class AccountService {
 
         switch (platform) {
             case Platform.OPEN_SOURCE:
-                await this.ensureOneOrganizationOnly(queryRunner)
-                data.organization.name = OrganizationName.DEFAULT_ORGANIZATION
-                data.organizationUser.role = await this.roleService.readGeneralRoleByName(GeneralRole.OWNER, queryRunner)
-                data.workspace.name = WorkspaceName.DEFAULT_WORKSPACE
-                data.workspaceUser.role = data.organizationUser.role
-                data.user.status = UserStatus.ACTIVE
-                data.user = await this.userService.createNewUser(data.user, queryRunner)
+                // Vérifier s'il existe déjà des organisations
+                const existingOrgs = await this.organizationservice.readOrganization(queryRunner)
+                
+                if (existingOrgs.length === 0) {
+                    // Première organisation - créer avec le nom par défaut
+                    data.organization.name = OrganizationName.DEFAULT_ORGANIZATION
+                    data.organizationUser.role = await this.roleService.readGeneralRoleByName(GeneralRole.OWNER, queryRunner)
+                    data.workspace.name = WorkspaceName.DEFAULT_WORKSPACE
+                    data.workspaceUser.role = data.organizationUser.role
+                    data.user.status = UserStatus.ACTIVE
+                    data.user = await this.userService.createNewUser(data.user, queryRunner)
+                } else {
+                    // Organisations existantes - ajouter l'utilisateur à l'organisation existante
+                    const existingOrg = existingOrgs[0] // Utiliser la première organisation
+                    data.organization = existingOrg
+                    data.organizationUser.role = await this.roleService.readGeneralRoleByName(GeneralRole.MEMBER, queryRunner)
+                    data.workspace.name = WorkspaceName.DEFAULT_WORKSPACE
+                    data.workspaceUser.role = data.organizationUser.role
+                    data.user.status = UserStatus.ACTIVE
+                    data.user = await this.userService.createNewUser(data.user, queryRunner)
+                }
                 break
             case Platform.CLOUD: {
                 const user = await this.userService.readUserByEmail(data.user.email, queryRunner)

@@ -21,13 +21,13 @@ const SSOSuccess = () => {
                             store.dispatch(loginSuccess(user.data))
                             navigate('/chatflows')
                         } else {
-                            navigate('/login')
+                            navigate('/login2')
                         }
                     } else {
-                        navigate('/login')
+                        navigate('/login2')
                     }
                 } catch (error) {
-                    navigate('/login')
+                    navigate('/login2')
                 }
             }
         }

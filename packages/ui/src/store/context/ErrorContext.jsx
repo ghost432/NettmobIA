@@ -19,7 +19,7 @@ export const ErrorProvider = ({ children }) => {
         } else if (err?.response?.status === 401) {
             if (ErrorMessage.INVALID_MISSING_TOKEN === err?.response?.data?.message) {
                 store.dispatch(logoutSuccess())
-                navigate('/login')
+                navigate('/login2')
             } else {
                 const isRedirect = err?.response?.data?.redirectTo && err?.response?.data?.error
 
@@ -30,9 +30,9 @@ export const ErrorProvider = ({ children }) => {
                     })
                 } else {
                     const currentPath = window.location.pathname
-                    if (currentPath !== '/signin' && currentPath !== '/login') {
+                    if (currentPath !== '/signin' && currentPath !== '/login' && currentPath !== '/login2') {
                         store.dispatch(logoutSuccess())
-                        navigate('/login')
+                        navigate('/login2')
                     }
                 }
             }

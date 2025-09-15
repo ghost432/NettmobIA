@@ -188,7 +188,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
         try {
             if (logoutApi.data && logoutApi.data.message === 'logged_out') {
                 store.dispatch(logoutSuccess())
-                window.location.href = logoutApi.data.redirectTo
+                window.location.href = '/login2'
             }
         } catch (e) {
             console.error(e)
