@@ -1,0 +1,26 @@
+{
+    "name": "flowise-plesk",
+    "version": "1.0.0",
+    "description": "Flowise deployment package for Plesk",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "build": "cd ../packages/server && npm run build",
+        "install-deps": "cd .. && pnpm install && pnpm build"
+    },
+    "engines": {
+        "node": ">=18.15.0 <19.0.0 || ^20",
+        "pnpm": ">=9"
+    },
+    "dependencies": {
+        "flowise": "latest"
+    },
+    "keywords": [
+        "flowise",
+        "ai",
+        "chatbot",
+        "plesk"
+    ],
+    "author": "FlowiseAI",
+    "license": "Apache-2.0"
+}

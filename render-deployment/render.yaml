@@ -1,0 +1,64 @@
+# Configuration Render pour Flowise
+# Ce fichier permet un déploiement automatique sur Render
+
+services:
+  - type: web
+    name: flowise
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/v1/ping
+    envVars:
+      # Configuration de base
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      
+      # Base de données
+      - key: DATABASE_TYPE
+        value: sqlite
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/database.sqlite
+      
+      # Sécurité (générées automatiquement)
+      - key: FLOWISE_SECRETKEY_OVERWRITE
+        generateValue: true
+      - key: JWT_AUTH_TOKEN_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_TOKEN_SECRET
+        generateValue: true
+      - key: EXPRESS_SESSION_SECRET
+        generateValue: true
+      - key: TOKEN_HASH_SECRET
+        generateValue: true
+      
+      # Configuration de l'application
+      - key: APP_URL
+        value: https://flowise.onrender.com
+      - key: STORAGE_TYPE
+        value: local
+      - key: BLOB_STORAGE_PATH
+        value: /opt/render/project/src/uploads
+      
+      # Logging
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_PATH
+        value: /opt/render/project/src/logs
+      
+      # CORS et sécurité
+      - key: CORS_ORIGINS
+        value: https://flowise.onrender.com
+      - key: DISABLE_FLOWISE_TELEMETRY
+        value: true
+      
+      # Limites
+      - key: FLOWISE_FILE_SIZE_LIMIT
+        value: 10
+      
+      # Configuration Node.js
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=512

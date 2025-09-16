@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: flowise-plesk
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Server Configuration
+      - PORT=3000
+      - NODE_ENV=production
+      
+      # Database Configuration
+      - DATABASE_PATH=/root/.flowise/database.sqlite
+      - DATABASE_TYPE=sqlite
+      
+      # Security (CHANGE THESE VALUES!)
+      - FLOWISE_SECRETKEY_OVERWRITE=your-secret-key-here
+      - JWT_AUTH_TOKEN_SECRET=your-jwt-secret-here
+      - JWT_REFRESH_TOKEN_SECRET=your-refresh-secret-here
+      
+      # Application URL (replace with your domain)
+      - APP_URL=https://yourdomain.com
+      
+      # Storage Configuration
+      - STORAGE_TYPE=local
+      - BLOB_STORAGE_PATH=/root/.flowise/uploads
+      
+      # Logging
+      - LOG_LEVEL=info
+      - LOG_PATH=/root/.flowise/logs
+      
+      # CORS Configuration
+      - CORS_ORIGINS=https://yourdomain.com
+      
+      # Disable telemetry
+      - DISABLE_FLOWISE_TELEMETRY=true
+      
+      # File size limit (in MB)
+      - FLOWISE_FILE_SIZE_LIMIT=10
+      
+    volumes:
+      # Persist data outside container
+      - flowise_data:/root/.flowise
+      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  flowise_data:
+    driver: local
