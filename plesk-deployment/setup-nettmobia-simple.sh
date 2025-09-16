@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Script de déploiement Flowise sur Plesk pour le projet NettmobIA
-# Usage: ./deploy-nettmobia.sh [domain]
-# Exemple: ./deploy-nettmobia.sh france.nettmobinfotech.fr
+# Script simple pour configurer Flowise dans NettmobIA
+# Usage: ./setup-nettmobia-simple.sh
 
 set -e
 
@@ -28,78 +27,28 @@ print_error() {
 
 print_header() {
     echo -e "${BLUE}================================${NC}"
-    echo -e "${BLUE}  Déploiement Flowise NettmobIA${NC}"
+    echo -e "${BLUE}  Configuration Flowise NettmobIA${NC}"
     echo -e "${BLUE}================================${NC}"
 }
 
-# Vérification des paramètres
-if [ $# -lt 1 ]; then
-    print_error "Usage: $0 <domain>"
-    print_error "Exemple: $0 france.nettmobinfotech.fr"
-    exit 1
-fi
-
-DOMAIN=$1
-# Le chemin sera déterminé dynamiquement
-HTTPDOCS_PATH=""
-NETTMOBIA_PATH=""
-FLOWISE_DATA_PATH=""
-
 print_header
 
-print_message "🚀 Déploiement Flowise pour NettmobIA"
-print_message "Domaine : $DOMAIN"
-print_message "Répertoire NettmobIA : $NETTMOBIA_PATH"
-print_message ""
+# Détecter le répertoire actuel
+CURRENT_DIR=$(pwd)
+print_message "📁 Répertoire actuel : $CURRENT_DIR"
 
-# Vérification des prérequis
-print_message "🔍 Vérification des prérequis..."
-
-# Vérifier si le domaine existe (différentes structures Plesk possibles)
-DOMAIN_PATH=""
-if [ -d "/var/www/vhosts/$DOMAIN" ]; then
-    DOMAIN_PATH="/var/www/vhosts/$DOMAIN"
-elif [ -d "/var/www/vhosts/$DOMAIN/httpdocs" ]; then
-    DOMAIN_PATH="/var/www/vhosts/$DOMAIN"
-elif [ -d "/var/www/vhosts/$DOMAIN/public_html" ]; then
-    DOMAIN_PATH="/var/www/vhosts/$DOMAIN"
-else
-    # Essayer de trouver le domaine dans d'autres emplacements
-    POSSIBLE_PATHS=$(find /var -name "*$DOMAIN*" -type d 2>/dev/null | head -5)
-    if [ -n "$POSSIBLE_PATHS" ]; then
-        print_warning "Domaine trouvé dans d'autres emplacements :"
-        echo "$POSSIBLE_PATHS"
-        print_warning "Veuillez spécifier le chemin complet du domaine"
-        print_error "Usage: $0 <chemin-complet-du-domaine>"
-        print_error "Exemple: $0 /var/www/vhosts/france.nettmobinfotech.fr"
-        exit 1
-    else
-        print_error "Le domaine $DOMAIN n'a pas été trouvé dans Plesk"
-        print_error "Vérifiez le nom du domaine ou utilisez le chemin complet"
-        exit 1
-    fi
-fi
-
-# Définir les chemins basés sur le domaine trouvé
-HTTPDOCS_PATH="$DOMAIN_PATH/httpdocs"
-NETTMOBIA_PATH="$DOMAIN_PATH/NettmobIA"
-FLOWISE_DATA_PATH="$DOMAIN_PATH/flowise_data"
-
-print_message "✅ Domaine trouvé : $DOMAIN_PATH"
-
-# Vérifier si le répertoire NettmobIA existe
-if [ ! -d "$NETTMOBIA_PATH" ]; then
-    print_error "Le répertoire NettmobIA n'existe pas : $NETTMOBIA_PATH"
-    print_error "Veuillez d'abord copier votre projet Flowise dans ce répertoire"
+# Vérifier si nous sommes dans le bon répertoire
+if [[ "$CURRENT_DIR" != *"NettmobIA"* ]]; then
+    print_warning "Vous n'êtes pas dans le répertoire NettmobIA"
+    print_message "Veuillez d'abord aller dans votre répertoire NettmobIA :"
+    print_message "cd /var/www/vhosts/france.nettmobinfotech.fr/NettmobIA"
     exit 1
 fi
-
-print_message "✅ Répertoire NettmobIA trouvé : $NETTMOBIA_PATH"
 
 # Vérifier si Node.js est disponible
 if ! command -v node &> /dev/null; then
-    print_warning "Node.js n'est pas installé. Veuillez installer l'extension Node.js dans Plesk"
-    print_warning "Extensions > Catalogue des extensions > Node.js"
+    print_error "Node.js n'est pas installé. Veuillez installer l'extension Node.js dans Plesk"
+    print_error "Extensions > Catalogue des extensions > Node.js"
     exit 1
 fi
 
@@ -120,21 +69,10 @@ fi
 
 print_message "✅ PNPM détecté : $(pnpm --version)"
 
-# Création des dossiers nécessaires
-print_message "📁 Création des dossiers nécessaires..."
+# Créer le fichier app.js
+print_message "📝 Création du fichier app.js..."
 
-mkdir -p "$FLOWISE_DATA_PATH"/{uploads,logs}
-chmod 755 "$FLOWISE_DATA_PATH"
-chmod 755 "$FLOWISE_DATA_PATH"/uploads
-chmod 755 "$FLOWISE_DATA_PATH"/logs
-
-print_message "✅ Dossiers créés : $FLOWISE_DATA_PATH"
-
-# Copier les fichiers de déploiement dans NettmobIA
-print_message "📋 Copie des fichiers de déploiement..."
-
-# Créer le fichier app.js pour NettmobIA
-cat > "$NETTMOBIA_PATH/app.js" << 'EOF'
+cat > app.js << 'EOF'
 #!/usr/bin/env node
 
 /**
@@ -183,8 +121,10 @@ process.on('SIGINT', () => {
 });
 EOF
 
-# Créer le package.json pour NettmobIA
-cat > "$NETTMOBIA_PATH/package.json" << EOF
+# Créer le package.json
+print_message "📦 Création du package.json..."
+
+cat > package.json << EOF
 {
     "name": "nettmobia-flowise",
     "version": "1.0.0",
@@ -215,8 +155,17 @@ cat > "$NETTMOBIA_PATH/package.json" << EOF
 }
 EOF
 
-# Créer le fichier .env pour NettmobIA
-cat > "$NETTMOBIA_PATH/.env" << EOF
+# Créer le fichier .env
+print_message "🔧 Création du fichier .env..."
+
+# Générer des clés secrètes
+SECRET_KEY=$(openssl rand -hex 32)
+JWT_SECRET=$(openssl rand -hex 32)
+JWT_REFRESH_SECRET=$(openssl rand -hex 32)
+SESSION_SECRET=$(openssl rand -hex 32)
+TOKEN_HASH_SECRET=$(openssl rand -hex 32)
+
+cat > .env << EOF
 # Configuration Flowise pour NettmobIA sur Plesk
 # Généré automatiquement le $(date)
 
@@ -226,28 +175,28 @@ PORT=3000
 
 # Base de données SQLite
 DATABASE_TYPE=sqlite
-DATABASE_PATH=$FLOWISE_DATA_PATH/database.sqlite
+DATABASE_PATH=./flowise_data/database.sqlite
 
-# Sécurité (générées automatiquement)
-FLOWISE_SECRETKEY_OVERWRITE=$(openssl rand -hex 32)
-JWT_AUTH_TOKEN_SECRET=$(openssl rand -hex 32)
-JWT_REFRESH_TOKEN_SECRET=$(openssl rand -hex 32)
-EXPRESS_SESSION_SECRET=$(openssl rand -hex 32)
-TOKEN_HASH_SECRET=$(openssl rand -hex 32)
+# Sécurité
+FLOWISE_SECRETKEY_OVERWRITE=$SECRET_KEY
+JWT_AUTH_TOKEN_SECRET=$JWT_SECRET
+JWT_REFRESH_TOKEN_SECRET=$JWT_REFRESH_SECRET
+EXPRESS_SESSION_SECRET=$SESSION_SECRET
+TOKEN_HASH_SECRET=$TOKEN_HASH_SECRET
 
 # Configuration de l'application
-APP_URL=https://$DOMAIN
+APP_URL=https://france.nettmobinfotech.fr
 
 # Stockage
 STORAGE_TYPE=local
-BLOB_STORAGE_PATH=$FLOWISE_DATA_PATH/uploads
+BLOB_STORAGE_PATH=./flowise_data/uploads
 
 # Logging
 LOG_LEVEL=info
-LOG_PATH=$FLOWISE_DATA_PATH/logs
+LOG_PATH=./flowise_data/logs
 
 # CORS et sécurité
-CORS_ORIGINS=https://$DOMAIN
+CORS_ORIGINS=https://france.nettmobinfotech.fr
 DISABLE_FLOWISE_TELEMETRY=true
 
 # Limites
@@ -257,8 +206,8 @@ FLOWISE_FILE_SIZE_LIMIT=10
 NODE_OPTIONS=--max-old-space-size=1024
 
 # Configuration JWT
-JWT_ISSUER=$DOMAIN
-JWT_AUDIENCE=$DOMAIN
+JWT_ISSUER=france.nettmobinfotech.fr
+JWT_AUDIENCE=france.nettmobinfotech.fr
 JWT_TOKEN_EXPIRY_IN_MINUTES=60
 JWT_REFRESH_TOKEN_EXPIRY_IN_MINUTES=10080
 
@@ -272,20 +221,19 @@ SMTP_PORT=587
 SMTP_USER=
 SMTP_PASSWORD=
 SMTP_SECURE=true
-SENDER_EMAIL=noreply@$DOMAIN
+SENDER_EMAIL=noreply@france.nettmobinfotech.fr
 EOF
 
-print_message "✅ Fichiers de configuration créés dans NettmobIA"
+# Créer le dossier de données
+print_message "📁 Création du dossier de données..."
+
+mkdir -p flowise_data/{uploads,logs}
+chmod 755 flowise_data
+chmod 755 flowise_data/uploads
+chmod 755 flowise_data/logs
 
 # Installer les dépendances
 print_message "📦 Installation des dépendances..."
-
-cd "$NETTMOBIA_PATH"
-
-# Installer PNPM si pas déjà fait
-if ! command -v pnpm &> /dev/null; then
-    npm install -g pnpm
-fi
 
 # Installer les dépendances Flowise
 print_message "🔄 Installation des dépendances Flowise..."
@@ -300,64 +248,63 @@ print_message "✅ Dépendances installées et application construite"
 # Corriger les permissions
 print_message "🔐 Correction des permissions..."
 
-chown -R psacln:psaserv "$NETTMOBIA_PATH"
-chown -R psacln:psaserv "$FLOWISE_DATA_PATH"
-chmod -R 755 "$NETTMOBIA_PATH"
-chmod -R 755 "$FLOWISE_DATA_PATH"
+chmod +x app.js
+chmod 755 flowise_data
+chmod 755 flowise_data/uploads
+chmod 755 flowise_data/logs
 
 print_message "✅ Permissions corrigées"
 
 # Instructions de configuration Plesk
 print_header
-print_message "🎉 Déploiement terminé !"
+print_message "🎉 Configuration terminée !"
 print_message ""
 print_message "📋 Configuration dans Plesk :"
 print_message ""
 print_message "1. 🌐 Allez dans Plesk Dashboard"
 print_message "2. 🏠 Allez dans 'Sites Web & Domaines'"
-print_message "3. 🔍 Sélectionnez le domaine : $DOMAIN"
+print_message "3. 🔍 Sélectionnez le domaine : france.nettmobinfotech.fr"
 print_message "4. 📱 Cliquez sur l'onglet 'Node.js'"
 print_message "5. ⚙️ Configurez les paramètres suivants :"
 print_message ""
 print_message "   📝 Configuration Node.js :"
 print_message "      - Version Node.js: $NODE_VERSION"
-print_message "      - Racine de l'application: $NETTMOBIA_PATH"
+print_message "      - Racine de l'application: $CURRENT_DIR"
 print_message "      - Fichier de démarrage: app.js"
 print_message "      - Mode de l'application: Production"
-print_message "      - Variables d'environnement: Voir fichier .env"
 print_message ""
 print_message "6. 🔧 Variables d'environnement importantes :"
 print_message "      - NODE_ENV: production"
 print_message "      - PORT: 3000"
-print_message "      - DATABASE_PATH: $FLOWISE_DATA_PATH/database.sqlite"
-print_message "      - BLOB_STORAGE_PATH: $FLOWISE_DATA_PATH/uploads"
-print_message "      - LOG_PATH: $FLOWISE_DATA_PATH/logs"
-print_message "      - APP_URL: https://$DOMAIN"
+print_message "      - DATABASE_PATH: ./flowise_data/database.sqlite"
+print_message "      - BLOB_STORAGE_PATH: ./flowise_data/uploads"
+print_message "      - LOG_PATH: ./flowise_data/logs"
+print_message "      - APP_URL: https://france.nettmobinfotech.fr"
 print_message ""
 print_message "7. 🚀 Cliquez sur 'Activer Node.js'"
 print_message "8. ⏳ Attendez le démarrage (1-2 minutes)"
-print_message "9. 🎯 Accédez à votre application : https://$DOMAIN"
+print_message "9. 🎯 Accédez à votre application : https://france.nettmobinfotech.fr"
 print_message ""
 
 print_warning "⚠️ Points importants :"
 print_warning "   - Assurez-vous que l'extension Node.js est installée dans Plesk"
 print_warning "   - Vérifiez que le port 3000 est disponible"
-print_warning "   - Les données sont stockées dans : $FLOWISE_DATA_PATH"
+print_warning "   - Les données sont stockées dans : ./flowise_data"
 print_warning "   - Sauvegardez régulièrement le dossier de données"
 print_message ""
 
 print_message "🔍 Vérification après activation :"
-print_message "   1. Allez sur https://$DOMAIN"
+print_message "   1. Allez sur https://france.nettmobinfotech.fr"
 print_message "   2. Vous devriez voir l'interface Flowise"
 print_message "   3. Si erreur, vérifiez les logs dans Plesk"
-print_message "   4. Testez l'endpoint de santé : https://$DOMAIN/api/v1/ping"
+print_message "   4. Testez l'endpoint de santé : https://france.nettmobinfotech.fr/api/v1/ping"
 print_message ""
 
 print_message "📁 Fichiers créés :"
-print_message "   - $NETTMOBIA_PATH/app.js (point d'entrée)"
-print_message "   - $NETTMOBIA_PATH/package.json (configuration NPM)"
-print_message "   - $NETTMOBIA_PATH/.env (variables d'environnement)"
-print_message "   - $FLOWISE_DATA_PATH/ (données de l'application)"
+print_message "   - app.js (point d'entrée)"
+print_message "   - package.json (configuration NPM)"
+print_message "   - .env (variables d'environnement)"
+print_message "   - flowise_data/ (données de l'application)"
 print_message ""
 
 print_message "🆘 En cas de problème :"
@@ -369,7 +316,7 @@ print_message ""
 
 print_header
 print_message "🚀 Configuration prête ! Suivez les étapes ci-dessus dans Plesk."
-print_message "📁 Répertoire de travail : $NETTMOBIA_PATH"
-print_message "💾 Données stockées dans : $FLOWISE_DATA_PATH"
+print_message "📁 Répertoire de travail : $CURRENT_DIR"
+print_message "💾 Données stockées dans : ./flowise_data"
 print_message ""
-print_message "🎯 Votre Flowise sera accessible sur : https://$DOMAIN"
+print_message "🎯 Votre Flowise sera accessible sur : https://france.nettmobinfotech.fr"
