@@ -37,7 +37,7 @@ services:
       
       # Configuration de l'application
       - key: APP_URL
-        value: https://netmobfloo.onrender.com
+        value: https://netmobflo.onrender.com
       - key: STORAGE_TYPE
         value: local
       - key: BLOB_STORAGE_PATH
@@ -51,7 +51,7 @@ services:
       
       # CORS et sécurité
       - key: CORS_ORIGINS
-        value: https://netmobfloo.onrender.com
+        value: https://netmobflo.onrender.com
       - key: DISABLE_FLOWISE_TELEMETRY
         value: true
       
