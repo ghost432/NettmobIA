@@ -1,0 +1,1 @@
+import{j as r,cf as e,b8 as p,P as a}from"./index-B5bgjFPS.js";const c=({open:o})=>r.jsx("div",{children:r.jsx(e,{sx:{color:"#fff",zIndex:s=>s.zIndex.drawer+1},open:o,children:r.jsx(p,{color:"inherit"})})});c.propTypes={open:a.bool};export{c as B};

@@ -1,0 +1,1 @@
+import{y as a,W as t,_ as o,$ as e}from"./index-B5bgjFPS.js";const r=a(o)(({theme:l})=>({borderColor:l.palette.grey[900]+25,[`&.${e.head}`]:{color:l.palette.grey[900]},[`&.${e.body}`]:{fontSize:14,height:64}})),d=a(t)(()=>({"&:last-child td, &:last-child th":{border:0}}));export{d as S,r as a};

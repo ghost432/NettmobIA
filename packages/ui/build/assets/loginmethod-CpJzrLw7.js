@@ -1,0 +1,1 @@
+import{b4 as o}from"./index-B5bgjFPS.js";const e=t=>o.get(`/loginmethod?organizationId=${t}`),n=()=>o.get("/loginmethod/default"),i=t=>o.put("/loginmethod",t),g=t=>o.post("/loginmethod/test",t),d={getLoginMethods:e,updateLoginMethods:i,testLoginMethod:g,getDefaultLoginMethods:n};export{d as l};

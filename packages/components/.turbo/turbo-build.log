@@ -1,0 +1,8 @@
+
+> flowise-components@3.0.5 build D:\sites\NetmobIA\NettmobIA\packages\components
+> tsc && gulp
+
+[[90m17:56:01[39m] Requiring external module ts-node/register
+[[90m17:56:10[39m] Using gulpfile D:\sites\NetmobIA\NettmobIA\packages\components\gulpfile.ts
+[[90m17:56:10[39m] Starting 'default'...
+[[90m17:56:11[39m] Finished 'default' after 1.15 s

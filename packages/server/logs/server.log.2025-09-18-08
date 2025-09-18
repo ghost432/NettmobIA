@@ -1,0 +1,37 @@
+2025-09-18 08:36:42 [INFO]: Starting Flowise...
+2025-09-18 08:36:42 [INFO]: 📦 [server]: Data Source initialized successfully
+2025-09-18 08:36:42 [INFO]: 🔄 [server]: Database migrations completed successfully
+2025-09-18 08:36:42 [INFO]: 🔐 [server]: Identity Manager initialized successfully
+2025-09-18 08:36:45 [INFO]: 🔧 [server]: Nodes pool initialized successfully
+2025-09-18 08:36:45 [INFO]: ⏹️ [server]: Abort controllers pool initialized successfully
+2025-09-18 08:36:45 [INFO]: 🔑 [server]: Encryption key initialized successfully
+2025-09-18 08:36:45 [INFO]: 🚦 [server]: Rate limiters initialized successfully
+2025-09-18 08:36:45 [INFO]: 💾 [server]: Cache pool initialized successfully
+2025-09-18 08:36:45 [INFO]: 📊 [server]: Usage cache manager initialized successfully
+2025-09-18 08:36:45 [INFO]: 📈 [server]: Telemetry initialized successfully
+2025-09-18 08:36:45 [INFO]: 🌊 [server]: SSE Streamer initialized successfully
+2025-09-18 08:36:45 [INFO]: 🎉 [server]: All initialization steps completed successfully!
+2025-09-18 08:36:45 [ERROR]: uncaughtException:  listen EADDRINUSE: address already in use :::3000
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at Object.start (/var/www/vhosts/nettmobinfotech.fr/france.nettmobinfotech.fr/packages/server/dist/index.js:332:12)
+    at async Start.run (/var/www/vhosts/nettmobinfotech.fr/france.nettmobinfotech.fr/packages/server/dist/commands/start.js:47:9)
+    at async Start._run (/var/www/vhosts/nettmobinfotech.fr/france.nettmobinfotech.fr/node_modules/.pnpm/@oclif+core@4.0.7/node_modules/@oclif/core/lib/command.js:302:22)
+    at async Config.runCommand (/var/www/vhosts/nettmobinfotech.fr/france.nettmobinfotech.fr/node_modules/.pnpm/@oclif+core@4.0.7/node_modules/@oclif/core/lib/config/config.js:424:25)
+    at async Object.run (/var/www/vhosts/nettmobinfotech.fr/france.nettmobinfotech.fr/node_modules/.pnpm/@oclif+core@4.0.7/node_modules/@oclif/core/lib/main.js:94:16)
+2025-09-18 08:37:29 [INFO]: Starting Flowise...
+2025-09-18 08:37:29 [INFO]: 📦 [server]: Data Source initialized successfully
+2025-09-18 08:37:29 [INFO]: 🔄 [server]: Database migrations completed successfully
+2025-09-18 08:37:29 [INFO]: 🔐 [server]: Identity Manager initialized successfully
+2025-09-18 08:37:31 [INFO]: 🔧 [server]: Nodes pool initialized successfully
+2025-09-18 08:37:31 [INFO]: ⏹️ [server]: Abort controllers pool initialized successfully
+2025-09-18 08:37:31 [INFO]: 🔑 [server]: Encryption key initialized successfully
+2025-09-18 08:37:31 [INFO]: 🚦 [server]: Rate limiters initialized successfully
+2025-09-18 08:37:31 [INFO]: 💾 [server]: Cache pool initialized successfully
+2025-09-18 08:37:31 [INFO]: 📊 [server]: Usage cache manager initialized successfully
+2025-09-18 08:37:31 [INFO]: 📈 [server]: Telemetry initialized successfully
+2025-09-18 08:37:31 [INFO]: 🌊 [server]: SSE Streamer initialized successfully
+2025-09-18 08:37:31 [INFO]: 🎉 [server]: All initialization steps completed successfully!
+2025-09-18 08:37:31 [INFO]: ⚡️ [server]: Flowise Server is listening at :3000

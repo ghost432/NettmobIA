@@ -1,0 +1,1 @@
+import{b4 as o}from"./index-B5bgjFPS.js";const t=s=>o.post("/auth/resolve",s),e=s=>o.post("/auth/login",s),n=()=>o.get("/auth/permissions"),i=s=>o.get(`/auth/sso-success?token=${s}`),c={resolveLogin:t,login:e,getAllPermissions:n,ssoSuccess:i};export{c as a};

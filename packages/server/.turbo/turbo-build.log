@@ -1,0 +1,8 @@
+
+> flowise@3.0.5 build D:\sites\NetmobIA\NettmobIA\packages\server
+> tsc && rimraf dist/enterprise/emails && gulp
+
+[[90m17:57:18[39m] Requiring external module ts-node/register
+[[90m17:57:22[39m] Using gulpfile D:\sites\NetmobIA\NettmobIA\packages\server\gulpfile.ts
+[[90m17:57:22[39m] Starting 'default'...
+[[90m17:57:22[39m] Finished 'default' after 41 ms

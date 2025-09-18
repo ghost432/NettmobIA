@@ -1,0 +1,17 @@
+services:
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: flowise
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - FLOWISE_BASEPATH=/flowise
+      - FLOWISE_SECRETKEY=supersecretkey   # 🔑 change ça par un vrai secret
+      - DATABASE_PATH=/root/.flowise       # persistance DB
+    volumes:
+      - flowise_data:/root/.flowise
+
+volumes:
+  flowise_data:
