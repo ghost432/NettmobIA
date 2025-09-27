@@ -145,6 +145,29 @@ const Register2Page = () => {
         }
     }
 
+    const fieldSchemas = {
+        username: z.string().min(1, 'Le nom complet est requis'),
+        email: z.string().min(1, "L'adresse e-mail est requise").email('Adresse e-mail invalide'),
+        password: passwordSchema,
+        confirmPassword: z.string().min(1, 'La confirmation du mot de passe est requise'),
+        token: z.string().min(1, "Le code d'invitation est requis")
+    }
+
+    const validateField = (name, value) => {
+        // Règle spéciale: correspondance des mots de passe
+        if (name === 'confirmPassword') {
+            if (value !== formData.password) {
+                setErrors((prev) => ({ ...prev, confirmPassword: 'Les mots de passe ne correspondent pas' }))
+                return false
+            }
+        }
+        const schema = fieldSchemas[name]
+        if (!schema) return true
+        const result = schema.safeParse(value)
+        setErrors((prev) => ({ ...prev, [name]: result.success ? '' : result.error.errors[0]?.message }))
+        return result.success
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setAuthError('')
@@ -413,7 +436,7 @@ const Register2Page = () => {
                             margin: 0
                         }}
                     >
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} noValidate autoComplete="off">
                             {/* Full Name Field */}
                             <Box sx={{ mb: 3 }}>
                                 <Typography
@@ -438,6 +461,7 @@ const Register2Page = () => {
                                     placeholder="Jean Dupont"
                                     value={formData.username}
                                     onChange={handleInputChange}
+                                    onBlur={(e) => validateField(e.target.name, e.target.value)}
                                     error={!!errors.username}
                                     helperText={errors.username}
                                     sx={{
@@ -485,7 +509,7 @@ const Register2Page = () => {
                                 >
                                     Adresse e-mail
                                 </Typography>
-                                <TextField
+                                    <TextField
                                     id="email"
                                     name="email"
                                     type="text"
@@ -495,6 +519,7 @@ const Register2Page = () => {
                                     placeholder="jean@exemple.com"
                                     value={formData.email}
                                     onChange={handleInputChange}
+                                        onBlur={(e) => validateField(e.target.name, e.target.value)}
                                     error={!!errors.email}
                                     helperText={errors.email}
                                     sx={{
@@ -552,6 +577,7 @@ const Register2Page = () => {
                                         placeholder="Collez le code d'invitation"
                                         value={formData.token}
                                         onChange={handleInputChange}
+                                        onBlur={(e) => validateField(e.target.name, e.target.value)}
                                         error={!!errors.token}
                                         helperText={errors.token}
                                         sx={{
@@ -610,6 +636,7 @@ const Register2Page = () => {
                                     placeholder="••••••••"
                                     value={formData.password}
                                     onChange={handleInputChange}
+                                    onBlur={(e) => validateField(e.target.name, e.target.value)}
                                     error={!!errors.password}
                                     helperText={errors.password}
                                     InputProps={{
@@ -681,6 +708,7 @@ const Register2Page = () => {
                                     placeholder="••••••••"
                                     value={formData.confirmPassword}
                                     onChange={handleInputChange}
+                                    onBlur={(e) => validateField(e.target.name, e.target.value)}
                                     error={!!errors.confirmPassword}
                                     helperText={errors.confirmPassword}
                                     InputProps={{
